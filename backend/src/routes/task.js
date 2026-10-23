@@ -37,17 +37,19 @@ router.get(
   validate(taskQuerySchema, "query"),
   asyncHandler(async (req, res) => {
     const { teamId, assigneeId, status, q } = req.query;
-    const params = [req.user.id];
+    const params = [req.user.id.toString()];
     let sql = SELECT_TASKS;
 
-   const add = (clause, values) => {
+  const add = (clause, values) => {
   const vals = Array.isArray(values) ? values : [values];
   
   let dynamicClause = clause;
-  vals.forEach((val) => {
-    params.push(val);
-    dynamicClause = dynamicClause.replace("?", `$${params.length}`);
-  });
+  for (const item of vals) {
+        params.push(item);
+      
+        dynamicClause = dynamicClause.replace("?", `$${params.length}`);
+      }
+
 
   sql += ` AND ${dynamicClause}`;
 };
